@@ -48,38 +48,40 @@ def first_task(a_arg: float, b_arg: float):
     print(f'First method required {cnt} steps')
 
     # Horde method
-
+    a = a_arg
+    b = b_arg
     cnt = 0
-    f_derivative = sp.lambdify(x, f)
-    if f_derivative(a) > 0:
-        current_x = a
-        next_x = current_x - (b - current_x) * (f.subs(x, current_x)) / (f.subs(x, b) - f.subs(x, current_x))
-        while abs(next_x - current_x) > 0.0001:
-            current_x = next_x
-            next_x = current_x - (b - current_x) * (f.subs(x, current_x)) / (f.subs(x, b) - f.subs(x, current_x))
+    f_derivative = f.diff(x)
+    f_derivative2 = f_derivative.diff(x)
+    xc = 0
+    if f.subs(x, b) * f_derivative2.subs(x, b) > 0:
+        xc = a
+        while abs(f.subs(x, xc)) > 0.0001:
+            xc = xc - (f.subs(x, xc) * (b - xc)) / (f.subs(x, b) - f.subs(x, xc))
             cnt += 1
     else:
-        current_x = b
-        next_x = current_x - (current_x - a) * f.subs(x, current_x) / (f.subs(x, current_x) - f.subs(x, a))
-        while abs(next_x - current_x):
-            current_x = next_x
-            next_x = current_x - (current_x - a) * f.subs(x, current_x) / (f.subs(x, current_x) - f.subs(x, a))
+        xc = b
+        while abs(f.subs(x, xc)) > 0.0001:
+            xc = xc - (f.subs(x, xc) * (xc - a)) / (f.subs(x, xc) - f.subs(x, a))
             cnt += 1
     print(f'Second method required {cnt} steps')
 
     # Newton method
-
-    xp = (a + b) / 2
-    f_derivative = f.diff(x)
-    xn = xp - f.subs(x, xp) / f_derivative.subs(x, xp)
+    a = a_arg
+    b = b_arg
     cnt = 0
-    while abs(xn - xp) > 0.0001:
-        xp = xn
-        xn = xp - (f.subs(x, xp) / f_derivative.subs(x, xp))
+    xn = 0
+    if f.subs(x, b) * f_derivative2.subs(x, b) > 0:
+        xn = b
+    else:
+        xn = a
+
+    while abs(f.subs(x, xn)) > 0.0001:
+        xn = xn - f.subs(x, xn) / f_derivative.subs(x, xn)
         cnt += 1
 
     print(f'Third method required {cnt} steps')
-    print(f'{c} {next_x} {xp}\n')
+    print(f'{c} {xc} {xn}\n')
 
 
 def second_task(x0: float, y0: float):
@@ -145,7 +147,7 @@ def second_task(x0: float, y0: float):
 
 
 if __name__ == '__main__':
-    first_graph()
+    # first_graph()
     root1, root2, root3 = first_task(-0.6, -0.4), first_task(1, 2), first_task(3, 5)
-    second_graph()
+    # second_graph()
     second_task(0.5, -0.2)
